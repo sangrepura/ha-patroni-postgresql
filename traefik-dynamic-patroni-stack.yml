@@ -40,14 +40,12 @@ http:
       loadBalancer:
         # More resilient health check config
         healthCheck:
-          path: "/"                  # Changed to root path first for basic connectivity test
           interval: "10s"            # Increased interval
           timeout: "5s"              # Increased timeout
           followRedirects: true
           headers:
             User-Agent: "Traefik Health Check"
-          scheme: "http"
         servers:
-          - url: "http://dbnode1:8008"
-          - url: "http://dbnode2:8008"
-          - url: "http://dbnode3:8008"
+          - url: "http://dbnode1:8008/master"
+          - url: "http://dbnode2:8008/replica"
+          - url: "http://dbnode3:8008/replica"
