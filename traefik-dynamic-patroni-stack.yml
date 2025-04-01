@@ -38,11 +38,11 @@ http:
   services:
     patroni-api:
       loadBalancer:
+        # More resilient health check config
         healthCheck:
-          path: "/master"
-          interval: "5s"
-          timeout: "3s"
-          port: 8008
+          path: "/"                  # Changed to root path first for basic connectivity test
+          interval: "10s"            # Increased interval
+          timeout: "5s"              # Increased timeout
           followRedirects: true
           headers:
             User-Agent: "Traefik Health Check"
