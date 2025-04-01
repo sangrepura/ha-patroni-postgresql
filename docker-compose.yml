@@ -5,7 +5,8 @@ services:
     configs: 
       - haproxy_cfg
     networks:
-      - dbs
+      - postgres
+      - traefik-public
     command: haproxy -f /haproxy_cfg
     deploy:
       labels:
@@ -25,14 +26,14 @@ services:
         - traefik.http.routers.api.tls.certresolver=myresolver
         - traefik.http.services.api.loadbalancer.server.port=8008
 
-  etcd:
+  etcd-postgres:
     image: quay.io/coreos/etcd:v3.1.2
     configs:
       - etcd_cfg
       - source: traefik_dynamic
         target: /var/run/traefik/dynamic/traefik_dynamic.yml
     networks:
-      - app-internal
+      - postgres
     command: /bin/sh /etcd_cfg
     volumes:
       - /mnt/data/traefik/dynamic:/var/run/traefik/dynamic
@@ -54,8 +55,7 @@ services:
     env_file:
       - stack.env
     networks:
-      - app-internal
-      - traefik-public
+      - postgres
     entrypoint: patroni
     command: /run/secrets/patroni.yml
 
@@ -76,8 +76,7 @@ services:
     env_file:
       - stack.env
     networks:
-      - app-internal
-      - traefik-public
+      - postgres
     entrypoint: patroni
     command: /run/secrets/patroni.yml
 
@@ -98,7 +97,7 @@ services:
     env_file:
       - stack.env
     networks:
-      - app-internal
+      - postgres
       - traefik-public
     entrypoint: patroni
     command: /run/secrets/patroni.yml
@@ -124,7 +123,7 @@ configs:
     file: callbacks/notification.sh
 
 networks:
-  app-internal:
+  postgres:
     external: true
   traefik-public:
     external: true 
