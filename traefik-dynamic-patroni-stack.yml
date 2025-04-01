@@ -13,6 +13,7 @@ tcp:
           - address: dbnode1:5432
           - address: dbnode2:5432
           - address: dbnode3:5432
-      # This transport enables Traefik to establish a TLS connection to the backend.
-      serverTransport: postgres-tls
-
+        serversTransport: postgres-tls
+  serversTransports:
+    postgres-tls:
+      insecureSkipVerify: true
