@@ -16,6 +16,11 @@ services:
     image: seocahill/patroni:1.2.5
     secrets:
       - patroni.yml
+    configs:
+      - source: notification.py
+        target: /home/postgres/notification.py
+      - source: notification.sh
+        target: /home/postgres/notification.sh
     environment:
       - PATRONI_NAME=dbnode1
       - PATRONI_POSTGRESQL_DATA_DIR=data/dbnode1
@@ -53,6 +58,11 @@ services:
     image: seocahill/patroni:1.2.5
     secrets:
       - patroni.yml
+    configs:
+      - source: notification.py
+        target: /home/postgres/notification.py
+      - source: notification.sh
+        target: /home/postgres/notification.sh
     environment:
       - PATRONI_NAME=dbnode2
       - PATRONI_POSTGRESQL_DATA_DIR=data/dbnode2
@@ -90,6 +100,11 @@ services:
     image: seocahill/patroni:1.2.5
     secrets:
       - patroni.yml
+    configs:
+      - source: notification.py
+        target: /home/postgres/notification.py
+      - source: notification.sh
+        target: /home/postgres/notification.sh
     environment:
       - PATRONI_NAME=dbnode3
       - PATRONI_POSTGRESQL_DATA_DIR=data/dbnode3
