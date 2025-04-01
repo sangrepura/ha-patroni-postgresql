@@ -45,6 +45,6 @@ http:
           headers:
             User-Agent: "Traefik Health Check"
         servers:
-          - url: "http://ha-postgres_dbnode1:8008"
-          - url: "http://ha-postgres_dbnode2:8008"
-          - url: "http://ha-postgres_dbnode3:8008"
+          - url: "http://dbnode1:8008"
+          - url: "http://dbnode2:8008"
+          - url: "http://dbnode3:8008"
