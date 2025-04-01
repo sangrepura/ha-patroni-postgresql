@@ -5,7 +5,8 @@ tcp:
         - pg
       rule: "HostSNI(`postgres.coastalsites.dev`)"
       service: postgres
-      tls: {} 
+      tls:
+        options: postgres-tls
   services:
     postgres:
       loadBalancer:
@@ -13,7 +14,7 @@ tcp:
           - address: dbnode1:5432
           - address: dbnode2:5432
           - address: dbnode3:5432
-        serversTransport: postgres-tls
-  serversTransports:
-    postgres-tls:
-      insecureSkipVerify: true
+  tls:
+    options:
+      postgres-tls:
+        insecureSkipVerify: true
