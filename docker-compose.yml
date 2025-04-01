@@ -78,6 +78,12 @@ networks:
     external: true
   traefik-public:
     external: true
+  postgres-master:
+    external: true
+  postgres-replica
+    external: true
+  patroni-api
+    external: true
 
 configs:
   traefik_dynamic:
