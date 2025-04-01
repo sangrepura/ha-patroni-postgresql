@@ -72,7 +72,7 @@ networks:
 
 configs:
   traefik_dynamic:
-    file: ./traefik-dynamic-patroni-stack.yml
+    file: traefik-dynamic-patroni-stack.yml
   etcd_cfg:
     file: config/etcd.sh
   cron_archive:
