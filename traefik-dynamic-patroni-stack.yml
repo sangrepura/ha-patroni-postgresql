@@ -12,12 +12,6 @@ tcp:
       rule: "HostSNI(`*`)"
       service: "postgres-replica"
 
-    patroni-api-router:
-      entryPoints:
-        - "patroni-api"
-      rule: "HostSNI(`*`)"
-      service: "patroni-api@http"
-
   services:
     postgres-master:
       loadBalancer:
@@ -25,7 +19,6 @@ tcp:
           - address: "dbnode1:5432"
           - address: "dbnode2:5432"
           - address: "dbnode3:5432"
-        # TCP services use Traefik's built-in health checking which works with Patroni
 
     postgres-replica:
       loadBalancer:
@@ -36,10 +29,11 @@ tcp:
 
 http:
   routers:
-    patroni-api:
-      entryPoints: ["patroni-api"]
+    patroni-api-router:
+      entryPoints:
+        - "patroni-api"
       rule: "PathPrefix(`/`)"
-      service: patroni-api-service
+      service: "patroni-api"
 
   services:
     patroni-api:
