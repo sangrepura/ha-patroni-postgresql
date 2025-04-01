@@ -117,6 +117,15 @@ configs:
   notification.sh:
     file: callbacks/notification.sh
 
+networks:
+  app-internal:
+    driver: overlay
+    attachable: true
+    external:
+      name: app-internal
+  traefik-public:
+    external: true 
+    name: traefik-public 
 
 
 secrets:
