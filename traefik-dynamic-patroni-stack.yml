@@ -2,6 +2,7 @@ http:
   services:
     patroni-api:
       loadBalancer:
+        port: 8008
         healthCheck:
           path: /master
           interval: 10s
@@ -13,13 +14,15 @@ tcp:
   services:
     postgres-master:
       loadBalancer:
+        port: 5000
         serversTransport: custom-transport  # Add custom transport
         servers: []  # Empty list for dynamic discovery
 
     postgres-replica:
       loadBalancer:
-        serversTransport: custom-transport  # Add custom transport
-        servers: []  # Empty list for dynamic discovery
+      port: 5001
+      serversTransport: custom-transport  # Add custom transport
+      servers: []  # Empty list for dynamic discovery
 
 serversTransports:
   custom-transport:
