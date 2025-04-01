@@ -20,16 +20,13 @@ services:
     environment:
       - PATRONI_NAME=dbnode1
       - PATRONI_POSTGRESQL_DATA_DIR=data/dbnode1
-      - PATRONI_POSTGRESQL_CONNECT_ADDRESS=ha-patroni-postgresql_dbnode1:5432
+      - PATRONI_POSTGRESQL_CONNECT_ADDRESS=dbnode1:5432
       - PATRONI_RESTAPI_CONNECT_ADDRESS=dbnode1:8008
     env_file:
       - stack.env
     networks:
       - app-internal
       - traefik-public
-      - postgres-master
-      - postgres-replica
-      - patroni-api
     entrypoint: patroni
     command: /run/secrets/patroni.yml
 
@@ -40,15 +37,12 @@ services:
     environment:
       - PATRONI_NAME=dbnode2
       - PATRONI_POSTGRESQL_DATA_DIR=data/dbnode2
-      - PATRONI_POSTGRESQL_CONNECT_ADDRESS=ha-patroni-postgresql_dbnode2:5432
+      - PATRONI_POSTGRESQL_CONNECT_ADDRESS=dbnode2:5432
       - PATRONI_RESTAPI_CONNECT_ADDRESS=dbnode2:8008
     env_file:
       - stack.env
     networks:
       - app-internal
-      - postgres-master
-      - postgres-replica
-      - patroni-api
       - traefik-public
     entrypoint: patroni
     command: /run/secrets/patroni.yml
@@ -60,16 +54,13 @@ services:
     environment:
       - PATRONI_NAME=dbnode3
       - PATRONI_POSTGRESQL_DATA_DIR=data/dbnode3
-      - PATRONI_POSTGRESQL_CONNECT_ADDRESS=ha-patroni-postgresql_dbnode3:5432
+      - PATRONI_POSTGRESQL_CONNECT_ADDRESS=dbnode3:5432
       - PATRONI_RESTAPI_CONNECT_ADDRESS=dbnode3:8008
     env_file:
       - stack.env
     networks:
       - app-internal
       - traefik-public
-      - postgres-master
-      - postgres-replica
-      - patroni-api
     entrypoint: patroni
     command: /run/secrets/patroni.yml
 
@@ -77,12 +68,6 @@ networks:
   app-internal:
     external: true
   traefik-public:
-    external: true
-  postgres-master:
-    external: true
-  postgres-replica:
-    external: true
-  patroni-api:
     external: true
 
 configs:

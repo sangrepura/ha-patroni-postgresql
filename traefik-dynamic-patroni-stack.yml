@@ -16,16 +16,16 @@ tcp:
     postgres-master:
       loadBalancer:
         servers:
-          - address: "ha-patroni-postgresql_dbnode1:5432"
-          - address: "ha-patroni-postgresql_dbnode2:5432"
-          - address: "ha-patroni-postgresql_dbnode3:5432"
+          - address: "dbnode1:5432"
+          - address: "dbnode2:5432"
+          - address: "dbnode3:5432"
 
     postgres-replica:
       loadBalancer:
         servers:
-          - address: "ha-patroni-postgresql_dbnode1:5432"
-          - address: "ha-patroni-postgresql_dbnode2:5432"
-          - address: "ha-patroni-postgresql_dbnode3:5432"
+          - address: "dbnode1:5432"
+          - address: "dbnode2:5432"
+          - address: "dbnode3:5432"
 
 http:
   routers:
@@ -45,6 +45,6 @@ http:
           headers:
             User-Agent: "Traefik Health Check"
         servers:
-          - url: "http://ha-patroni-postgresql_dbnode1:8008"
-          - url: "http://ha-patroni-postgresql_dbnode2:8008"
-          - url: "http://ha-patroni-postgresql_dbnode3:8008"
+          - url: "http://dbnode1:8008"
+          - url: "http://dbnode2:8008"
+          - url: "http://dbnode3:8008"
