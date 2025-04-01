@@ -24,7 +24,3 @@ tcp:
           X-Forwarded-Host: "postgres.coastalsites.dev"
         sslRedirect: true
         customFrameOptionsValue: "ALLOWALL"
-        customRequestHeaders:
-          X-Forwarded-Host: "postgres.coastalsites.dev"
-        customResponseHeaders:
-          X-Forwarded-Host: "postgres.coastalsites.dev"
