@@ -1,16 +1,57 @@
 tcp:
   routers:
-    postgres:
-      entryPoints:
-        - postgres  # MUST MATCH --entrypoints.postgres.address in Traefik config
-      rule: "HostSNI(`postgres.coastalsites.dev`)"
-      service: postgres
-      tls: {} 
+    postgres-master:
+      entryPoints: ["postgres-master"]
+      rule: "HostSNI(`*`)"
+      service: postgres-master-service
+    postgres-replica:
+      entryPoints: ["postgres-replica"]
+      rule: "HostSNI(`*`)"
+      service: postgres-replica-service
 
   services:
-    postgres:
+    postgres-master-service:
       loadBalancer:
         servers:
-          - address: dbnode1:5432
-          - address: dbnode2:5432
-          - address: dbnode3:5432
+          - address: "dbnode1:5432"
+          - address: "dbnode2:5432"
+          - address: "dbnode3:5432"
+        healthCheck:
+          path: "/master"
+          port: 8008
+          method: "OPTIONS"
+          interval: "5s"
+          timeout: "5s"
+
+    postgres-replica-service:
+      loadBalancer:
+        servers:
+          - address: "dbnode1:5432"
+          - address: "dbnode2:5432"
+          - address: "dbnode3:5432"
+        healthCheck:
+          path: "/replica"
+          port: 8008
+          method: "OPTIONS"
+          interval: "5s"
+          timeout: "5s"
+
+http:
+  routers:
+    patroni-api:
+      entryPoints: ["patroni-api"]
+      rule: "PathPrefix(`/`)"
+      service: patroni-api-service
+
+  services:
+    patroni-api-service:
+      loadBalancer:
+        servers:
+          - url: "http://dbnode1:8008/"
+          - url: "http://dbnode2:8008/"
+          - url: "http://dbnode3:8008/"
+        healthCheck:
+          path: "/master"
+          method: "OPTIONS"
+          interval: "5s"
+          timeout: "5s"
