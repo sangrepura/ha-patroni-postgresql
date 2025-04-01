@@ -2,7 +2,7 @@ tcp:
   routers:
     postgres:
       entryPoints:
-        - pg
+        - postgres
       rule: "HostSNI(`postgres.coastalsites.dev`)"
       service: postgres
       tls:
