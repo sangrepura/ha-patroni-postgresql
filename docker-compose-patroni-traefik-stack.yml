@@ -1,0 +1,96 @@
+version: '3.3'
+services:
+
+  etcd:
+    image: quay.io/coreos/etcd:v3.1.2
+    configs:
+      - etcd_cfg
+          configs:
+      - source: traefik_dynamic
+        target: /var/run/traefik/traefik_dynamic.yml
+    networks:
+      - app-internal
+    command: /bin/sh /etcd_cfg
+
+  dbnode1:
+    image: seocahill/patroni:1.2.5
+    secrets:
+      - patroni.yml
+    environment:
+      - PATRONI_NAME=dbnode1
+      - PATRONI_POSTGRESQL_DATA_DIR=data/dbnode1
+      - PATRONI_POSTGRESQL_CONNECT_ADDRESS=dbnode1:5432
+      - PATRONI_RESTAPI_CONNECT_ADDRESS=dbnode1:8008
+    env_file:
+      - test.env
+    networks:
+      - app-internal
+      - traefik-public
+    entrypoint: patroni
+    command: /run/secrets/patroni.yml
+
+  dbnode2:
+    image: seocahill/patroni:1.2.5
+    secrets:
+      - patroni.yml
+    environment:
+      - PATRONI_NAME=dbnode2
+      - PATRONI_POSTGRESQL_DATA_DIR=data/dbnode2
+      - PATRONI_POSTGRESQL_CONNECT_ADDRESS=dbnode2:5432
+      - PATRONI_RESTAPI_CONNECT_ADDRESS=dbnode2:8008
+    env_file:
+      - test.env
+    networks:
+      - app-internal
+      - traefik-public
+    entrypoint: patroni
+    command: /run/secrets/patroni.yml
+
+  dbnode3:
+    image: seocahill/patroni:1.2.5
+    secrets:
+      - patroni.yml
+    environment:
+      - PATRONI_NAME=dbnode3
+      - PATRONI_POSTGRESQL_DATA_DIR=data/dbnode3
+      - PATRONI_POSTGRESQL_CONNECT_ADDRESS=dbnode3:5432
+      - PATRONI_RESTAPI_CONNECT_ADDRESS=dbnode3:8008
+    env_file:
+      - test.env
+    networks:
+      - app-internal
+      - traefik-public
+    entrypoint: patroni
+    command: /run/secrets/patroni.yml
+volumes:
+      - "/mnt/data/traefik/dynamic:/var/run/traefik/dynamic"
+networks:
+  app-internal:
+    external: true
+  traefik-public:
+    external: true
+
+configs:
+  traefik_dynamic:
+    file: ./traefik_dynamic-patroni-stack.yml
+  etcd_cfg:
+    file: config/etcd.sh
+  cron_archive:
+    file: cron/archive.sh
+  cron_restore_archive:
+    file: cron/restore_archive.sh
+  cron_dump:
+    file: cron/dump.sh
+  cron_restore_dump:
+    file: cron/restore_dump.sh
+  notification.py:
+    file: callbacks/notification.py
+  notification.sh:
+    file: callbacks/notification.sh
+
+
+
+secrets:
+  patroni.yml:
+    file: patroni.yml
+
