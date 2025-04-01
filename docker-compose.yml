@@ -119,13 +119,9 @@ configs:
 
 networks:
   app-internal:
-    driver: overlay
-    attachable: true
-    external:
-      name: app-internal
+    external: true
   traefik-public:
     external: true 
-    name: traefik-public 
 
 
 secrets:
