@@ -5,7 +5,7 @@ tcp:
         - pg
       rule: "HostSNI(`postgres.coastalsites.dev`)"
       service: postgres
-      tls: {}  # Enables TLS termination at Traefik
+      tls: {} 
   services:
     postgres:
       loadBalancer:
@@ -15,8 +15,4 @@ tcp:
           - address: dbnode3:5432
       # This transport enables Traefik to establish a TLS connection to the backend.
       serverTransport: postgres-tls
-  serverTransports:
-    postgres-tls:
-      # Use this if your backend certificates are self-signed or not verifiable by Traefik.
-      insecureSkipVerify: true
 
