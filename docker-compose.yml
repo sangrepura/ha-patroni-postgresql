@@ -1,42 +1,40 @@
 version: '3.3'
+
 services:
   haproxy:
     image: haproxy:alpine
     configs: 
       - haproxy_cfg
     networks:
-      - postgres
-      - traefik-public
-    command: haproxy -f /haproxy_cfg
+      - app-internal
+    command: ["haproxy", "-f", "/haproxy_cfg"]
     deploy:
       labels:
         - traefik.enable=true
         # PostgreSQL Master (TCP 5000)
         - traefik.tcp.routers.pg-master.rule=HostSNI(`*`)
-        - traefik.tcp.routers.pg-master.entrypoints=pg-master
+        - traefik.tcp.routers.pg-master.entrypoints=postgres-master
         - traefik.tcp.services.pg-master.loadbalancer.server.port=5000
         # PostgreSQL Replica (TCP 5001)
         - traefik.tcp.routers.pg-replica.rule=HostSNI(`*`)
-        - traefik.tcp.routers.pg-replica.entrypoints=pg-replica
+        - traefik.tcp.routers.pg-replica.entrypoints=postgres-replica
         - traefik.tcp.services.pg-replica.loadbalancer.server.port=5001
         # REST API (HTTPS 443)
-        - traefik.http.routers.api.rule=Host(`api.example.com`)  # Update domain
+        - traefik.http.routers.api.rule=Host(`api.example.com`)
         - traefik.http.routers.api.entrypoints=websecure
         - traefik.http.routers.api.tls=true
         - traefik.http.routers.api.tls.certresolver=myresolver
         - traefik.http.services.api.loadbalancer.server.port=8008
 
-  etcd-postgres:
+  etcd:
     image: quay.io/coreos/etcd:v3.1.2
     configs:
       - etcd_cfg
-      - source: traefik_dynamic
-        target: /var/run/traefik/dynamic/traefik_dynamic.yml
     networks:
-      - postgres
-    command: /bin/sh /etcd_cfg
+      - app-internal
+    command: ["/bin/sh", "/etcd_cfg"]
     volumes:
-      - /mnt/data/traefik/dynamic:/var/run/traefik/dynamic
+      - /mnt/data/etcd:/etcd-data
 
   dbnode1:
     image: seocahill/patroni:1.2.5
@@ -49,15 +47,20 @@ services:
         target: /home/postgres/notification.sh
     environment:
       - PATRONI_NAME=dbnode1
-      - PATRONI_POSTGRESQL_DATA_DIR=data/dbnode1
+      - PATRONI_POSTGRESQL_DATA_DIR=/data/dbnode1
       - PATRONI_POSTGRESQL_CONNECT_ADDRESS=dbnode1:5432
       - PATRONI_RESTAPI_CONNECT_ADDRESS=dbnode1:8008
     env_file:
       - stack.env
     networks:
-      - postgres
-    entrypoint: patroni
-    command: /run/secrets/patroni.yml
+      - app-internal
+    volumes:
+      - /mnt/data/postgresql/dbnode1:/data/dbnode1
+    deploy:
+      restart_policy:
+        condition: on-failure
+      labels:
+        - traefik.enable=false  # Should not be exposed directly
 
   dbnode2:
     image: seocahill/patroni:1.2.5
@@ -70,15 +73,20 @@ services:
         target: /home/postgres/notification.sh
     environment:
       - PATRONI_NAME=dbnode2
-      - PATRONI_POSTGRESQL_DATA_DIR=data/dbnode2
+      - PATRONI_POSTGRESQL_DATA_DIR=/data/dbnode2
       - PATRONI_POSTGRESQL_CONNECT_ADDRESS=dbnode2:5432
       - PATRONI_RESTAPI_CONNECT_ADDRESS=dbnode2:8008
     env_file:
       - stack.env
     networks:
-      - postgres
-    entrypoint: patroni
-    command: /run/secrets/patroni.yml
+      - app-internal
+    volumes:
+      - /mnt/data/postgresql/dbnode2:/data/dbnode2
+    deploy:
+      restart_policy:
+        condition: on-failure
+      labels:
+        - traefik.enable=false  # Should not be exposed directly
 
   dbnode3:
     image: seocahill/patroni:1.2.5
@@ -91,22 +99,30 @@ services:
         target: /home/postgres/notification.sh
     environment:
       - PATRONI_NAME=dbnode3
-      - PATRONI_POSTGRESQL_DATA_DIR=data/dbnode3
+      - PATRONI_POSTGRESQL_DATA_DIR=/data/dbnode3
       - PATRONI_POSTGRESQL_CONNECT_ADDRESS=dbnode3:5432
       - PATRONI_RESTAPI_CONNECT_ADDRESS=dbnode3:8008
     env_file:
       - stack.env
     networks:
-      - postgres
-      - traefik-public
-    entrypoint: patroni
-    command: /run/secrets/patroni.yml
+      - app-internal
+    volumes:
+      - /mnt/data/postgresql/dbnode3:/data/dbnode3
+    deploy:
+      restart_policy:
+        condition: on-failure
+      labels:
+        - traefik.enable=false  # Should not be exposed directly
+
+volumes:
+  db-1-data:
+  db-2-data:
+  db-3-data:
+  etcd_data:
 
 configs:
   haproxy_cfg:
     file: config/haproxy.cfg
-  traefik_dynamic:
-    file: traefik-dynamic-patroni-stack.yml
   etcd_cfg:
     file: config/etcd.sh
   cron_archive:
@@ -123,13 +139,11 @@ configs:
     file: callbacks/notification.sh
 
 networks:
-  postgres:
-    external: true
+  app-internal:
+    internal: true  # Make this network internal only
   traefik-public:
-    external: true 
-
+    external: true
 
 secrets:
   patroni.yml:
     file: patroni.yml
-
