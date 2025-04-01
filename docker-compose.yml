@@ -80,9 +80,9 @@ networks:
     external: true
   postgres-master:
     external: true
-  postgres-replica
+  postgres-replica:
     external: true
-  patroni-api
+  patroni-api:
     external: true
 
 configs:
