@@ -6,7 +6,7 @@ services:
     configs:
       - etcd_cfg
       - source: traefik_dynamic
-        target: /var/run/traefik/traefik_dynamic.yml
+        target: /var/run/traefik/dynamic/traefik_dynamic.yml
     networks:
       - app-internal
     command: /bin/sh /etcd_cfg
