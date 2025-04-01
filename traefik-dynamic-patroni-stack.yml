@@ -6,7 +6,7 @@ tcp:
       rule: "HostSNI(`postgres.coastalsites.dev`)"
       service: postgres
       tls:
-        options: postgres-tls
+        passthrough: true
   services:
     postgres:
       loadBalancer:
@@ -14,7 +14,17 @@ tcp:
           - address: dbnode1:5432
           - address: dbnode2:5432
           - address: dbnode3:5432
-  tls:
-    options:
-      postgres-tls:
-        insecureSkipVerify: true
+        passHostHeader: true
+  middlewares:
+    postgres:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Host: "postgres.coastalsites.dev"
+        customResponseHeaders:
+          X-Forwarded-Host: "postgres.coastalsites.dev"
+        sslRedirect: true
+        customFrameOptionsValue: "ALLOWALL"
+        customRequestHeaders:
+          X-Forwarded-Host: "postgres.coastalsites.dev"
+        customResponseHeaders:
+          X-Forwarded-Host: "postgres.coastalsites.dev"
