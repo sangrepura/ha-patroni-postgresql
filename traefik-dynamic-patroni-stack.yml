@@ -1,50 +1,28 @@
-tcp:
-  routers:
-    postgres-master-router:
-      entryPoints:
-        - "postgres-master"
-      rule: "HostSNI(`*`)"
-      service: "postgres-master"
-
-    postgres-replica-router:
-      entryPoints:
-        - "postgres-replica"
-      rule: "HostSNI(`*`)"
-      service: "postgres-replica"
-
-  services:
-    postgres-master:
-      loadBalancer:
-        servers:
-          - address: "dbnode1:5432"
-          - address: "dbnode2:5432"
-          - address: "dbnode3:5432"
-
-    postgres-replica:
-      loadBalancer:
-        servers:
-          - address: "dbnode1:5432"
-          - address: "dbnode2:5432"
-          - address: "dbnode3:5432"
-
 http:
-  routers:
-    patroni-api-router:
-      entryPoints:
-        - "patroni-api"
-      rule: "PathPrefix(`/`)"
-      service: "patroni-api"
-
   services:
     patroni-api:
       loadBalancer:
-        # More resilient health check config
         healthCheck:
-          interval: "10s"            # Increased interval
-          timeout: "5s"              # Increased timeout
-          headers:
-            User-Agent: "Traefik Health Check"
-        servers:
-          - url: "http://dbnode1:8008"
-          - url: "http://dbnode2:8008"
-          - url: "http://dbnode3:8008"
+          path: /master
+          interval: 10s
+          timeout: 5s
+        serversTransport: custom-transport  # Add custom transport
+        servers: []  # Let Docker DNS handle discovery
+
+tcp:
+  services:
+    postgres-master:
+      loadBalancer:
+        serversTransport: custom-transport  # Add custom transport
+        servers: []  # Empty list for dynamic discovery
+
+    postgres-replica:
+      loadBalancer:
+        serversTransport: custom-transport  # Add custom transport
+        servers: []  # Empty list for dynamic discovery
+
+serversTransports:
+  custom-transport:
+    insecureSkipVerify: true
+    rootCAs:
+      - /var/run/secrets/ca.crt
