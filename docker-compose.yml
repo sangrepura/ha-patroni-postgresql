@@ -5,7 +5,6 @@ services:
     image: quay.io/coreos/etcd:v3.1.2
     configs:
       - etcd_cfg
-          configs:
       - source: traefik_dynamic
         target: /var/run/traefik/traefik_dynamic.yml
     networks:
