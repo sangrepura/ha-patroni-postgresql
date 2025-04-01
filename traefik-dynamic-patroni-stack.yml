@@ -46,7 +46,7 @@ http:
           followRedirects: true
           headers:
             User-Agent: "Traefik Health Check"
-          scheme: "http"
+          scheme: "https"
         servers:
           - host: "dbnode1"
           - host: "dbnode2"
