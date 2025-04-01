@@ -1,41 +1,38 @@
 tcp:
   routers:
-    postgres-master:
-      entryPoints: ["postgres-master"]
+    postgres-master-router:
+      entryPoints:
+        - "postgres-master"
       rule: "HostSNI(`*`)"
-      service: postgres-master-service
-      tls:
-        passthrough: true
+      service: "postgres-master"
 
-    postgres-replica:
-      entryPoints: ["postgres-replica"]
+    postgres-replica-router:
+      entryPoints:
+        - "postgres-replica"
       rule: "HostSNI(`*`)"
-      service: postgres-replica-service
-      tls:
-        passthrough: true
+      service: "postgres-replica"
+
+    patroni-api-router:
+      entryPoints:
+        - "patroni-api"
+      rule: "HostSNI(`*`)"
+      service: "patroni-api@http"
 
   services:
-    postgres-master-service:
+    postgres-master:
       loadBalancer:
         servers:
           - address: "dbnode1:5432"
           - address: "dbnode2:5432"
           - address: "dbnode3:5432"
-        healthCheck:
-          port: 8008
-          interval: "5s"
-          timeout: "5s"
+        # TCP services use Traefik's built-in health checking which works with Patroni
 
-    postgres-replica-service:
+    postgres-replica:
       loadBalancer:
         servers:
           - address: "dbnode1:5432"
           - address: "dbnode2:5432"
           - address: "dbnode3:5432"
-        healthCheck:
-          port: 8008
-          interval: "5s"
-          timeout: "5s"
 
 http:
   routers:
@@ -45,13 +42,13 @@ http:
       service: patroni-api-service
 
   services:
-    patroni-api-service:
+    patroni-api:
       loadBalancer:
-        healthCheck:
-          path: "/master"
-          interval: "5s"
-          timeout: "5s"
         servers:
           - url: "http://dbnode1:8008"
           - url: "http://dbnode2:8008"
           - url: "http://dbnode3:8008"
+        healthCheck:
+          path: "/master"
+          interval: "5s"
+          timeout: "3s"
