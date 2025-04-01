@@ -43,7 +43,6 @@ http:
           interval: "5s"
           timeout: "3s"
           port: 8008
-          retries: 3
           followRedirects: true
           headers:
             User-Agent: "Traefik Health Check"
