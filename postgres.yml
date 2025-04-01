@@ -1,0 +1,26 @@
+tcp:
+  routers:
+    postgres-master:
+      entryPoints:
+        - "postgres-master"
+      rule: "HostSNI(`*`)"
+      service: postgres-master-backend
+    postgres-replica:
+      entryPoints:
+        - "postgres-replica"
+      rule: "HostSNI(`*`)"
+      service: postgres-replica-backend
+
+  services:
+    postgres-master-backend:
+      loadBalancer:
+        servers:
+          - address: "dbnode1:5432"
+          - address: "dbnode2:5432"
+          - address: "dbnode3:5432"
+    postgres-replica-backend:
+      loadBalancer:
+        servers:
+          - address: "dbnode1:5432"
+          - address: "dbnode2:5432"
+          - address: "dbnode3:5432"
