@@ -48,6 +48,6 @@ http:
             User-Agent: "Traefik Health Check"
           scheme: "https"
         servers:
-          - host: "dbnode1"
-          - host: "dbnode2"
-          - host: "dbnode3"
+          - url: "https://dbnode1:8008"
+          - url: "https://dbnode2:8008"
+          - url: "https://dbnode3:8008"
