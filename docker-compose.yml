@@ -31,18 +31,23 @@ services:
     deploy:
       labels:
         - traefik.enable=true
-        # Unique router name for master connection on this node
+        # Master connection configuration
         - traefik.tcp.routers.postgres-master-1.entrypoints=postgres-master
         - traefik.tcp.routers.postgres-master-1.rule=HostSNI(`*`)
-        - traefik.tcp.services.postgres-master-1.loadbalancer.server.port=5432
-        # Unique router name for replica connection on this node
+        - traefik.tcp.routers.postgres-master-1.service=postgres-master-service-1
+        - traefik.tcp.services.postgres-master-service-1.loadbalancer.server.port=5432
+        
+        # Replica connection configuration
         - traefik.tcp.routers.postgres-replica-1.entrypoints=postgres-replica
         - traefik.tcp.routers.postgres-replica-1.rule=HostSNI(`*`)
-        - traefik.tcp.services.postgres-replica-1.loadbalancer.server.port=5432
-        # Unique router name for API
+        - traefik.tcp.routers.postgres-replica-1.service=postgres-replica-service-1
+        - traefik.tcp.services.postgres-replica-service-1.loadbalancer.server.port=5432
+        
+        # API configuration
         - traefik.http.routers.patroni-api-1.entrypoints=patroni-api
         - traefik.http.routers.patroni-api-1.rule=PathPrefix(`/`)
-        - traefik.http.services.patroni-api-1.loadbalancer.server.port=8008
+        - traefik.http.routers.patroni-api-1.service=patroni-api-service-1
+        - traefik.http.services.patroni-api-service-1.loadbalancer.server.port=8008
 
   dbnode2:
     image: seocahill/patroni:1.2.5
@@ -63,18 +68,23 @@ services:
     deploy:
       labels:
         - traefik.enable=true
-        # Unique router name for master connection on this node
+        # Master connection configuration
         - traefik.tcp.routers.postgres-master-2.entrypoints=postgres-master
         - traefik.tcp.routers.postgres-master-2.rule=HostSNI(`*`)
-        - traefik.tcp.services.postgres-master-2.loadbalancer.server.port=5432
-        # Unique router name for replica connection on this node
+        - traefik.tcp.routers.postgres-master-2.service=postgres-master-service-2
+        - traefik.tcp.services.postgres-master-service-2.loadbalancer.server.port=5432
+        
+        # Replica connection configuration
         - traefik.tcp.routers.postgres-replica-2.entrypoints=postgres-replica
         - traefik.tcp.routers.postgres-replica-2.rule=HostSNI(`*`)
-        - traefik.tcp.services.postgres-replica-2.loadbalancer.server.port=5432
-        # Unique router name for API
+        - traefik.tcp.routers.postgres-replica-2.service=postgres-replica-service-2
+        - traefik.tcp.services.postgres-replica-service-2.loadbalancer.server.port=5432
+        
+        # API configuration
         - traefik.http.routers.patroni-api-2.entrypoints=patroni-api
         - traefik.http.routers.patroni-api-2.rule=PathPrefix(`/`)
-        - traefik.http.services.patroni-api-2.loadbalancer.server.port=8008
+        - traefik.http.routers.patroni-api-2.service=patroni-api-service-2
+        - traefik.http.services.patroni-api-service-2.loadbalancer.server.port=8008
 
   dbnode3:
     image: seocahill/patroni:1.2.5
@@ -95,18 +105,23 @@ services:
     deploy:
       labels:
         - traefik.enable=true
-        # Unique router name for master connection on this node
+        # Master connection configuration
         - traefik.tcp.routers.postgres-master-3.entrypoints=postgres-master
         - traefik.tcp.routers.postgres-master-3.rule=HostSNI(`*`)
-        - traefik.tcp.services.postgres-master-3.loadbalancer.server.port=5432
-        # Unique router name for replica connection on this node
+        - traefik.tcp.routers.postgres-master-3.service=postgres-master-service-3
+        - traefik.tcp.services.postgres-master-service-3.loadbalancer.server.port=5432
+        
+        # Replica connection configuration
         - traefik.tcp.routers.postgres-replica-3.entrypoints=postgres-replica
         - traefik.tcp.routers.postgres-replica-3.rule=HostSNI(`*`)
-        - traefik.tcp.services.postgres-replica-3.loadbalancer.server.port=5432
-        # Unique router name for API
+        - traefik.tcp.routers.postgres-replica-3.service=postgres-replica-service-3
+        - traefik.tcp.services.postgres-replica-service-3.loadbalancer.server.port=5432
+        
+        # API configuration
         - traefik.http.routers.patroni-api-3.entrypoints=patroni-api
         - traefik.http.routers.patroni-api-3.rule=PathPrefix(`/`)
-        - traefik.http.services.patroni-api-3.loadbalancer.server.port=8008
+        - traefik.http.routers.patroni-api-3.service=patroni-api-service-3
+        - traefik.http.services.patroni-api-service-3.loadbalancer.server.port=8008
 
 configs:
   traefik_dynamic:
