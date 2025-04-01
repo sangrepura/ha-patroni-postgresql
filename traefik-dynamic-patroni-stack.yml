@@ -4,10 +4,15 @@ tcp:
       entryPoints: ["postgres-master"]
       rule: "HostSNI(`*`)"
       service: postgres-master-service
+      tls:
+        passthrough: true
+
     postgres-replica:
       entryPoints: ["postgres-replica"]
       rule: "HostSNI(`*`)"
       service: postgres-replica-service
+      tls:
+        passthrough: true
 
   services:
     postgres-master-service:
@@ -17,9 +22,7 @@ tcp:
           - address: "dbnode2:5432"
           - address: "dbnode3:5432"
         healthCheck:
-          path: "/master"
           port: 8008
-          method: "OPTIONS"
           interval: "5s"
           timeout: "5s"
 
@@ -30,9 +33,7 @@ tcp:
           - address: "dbnode2:5432"
           - address: "dbnode3:5432"
         healthCheck:
-          path: "/replica"
           port: 8008
-          method: "OPTIONS"
           interval: "5s"
           timeout: "5s"
 
@@ -46,12 +47,11 @@ http:
   services:
     patroni-api-service:
       loadBalancer:
-        servers:
-          - url: "http://dbnode1:8008/"
-          - url: "http://dbnode2:8008/"
-          - url: "http://dbnode3:8008/"
         healthCheck:
           path: "/master"
-          method: "OPTIONS"
           interval: "5s"
           timeout: "5s"
+        servers:
+          - url: "http://dbnode1:8008"
+          - url: "http://dbnode2:8008"
+          - url: "http://dbnode3:8008"
