@@ -6,25 +6,26 @@ services:
     configs: 
       - haproxy_cfg
     networks:
+      - traefik-public
       - app-internal
     command: ["haproxy", "-f", "/haproxy_cfg"]
     deploy:
       labels:
         - traefik.enable=true
-        # PostgreSQL Master (TCP 5000)
         - traefik.tcp.routers.pg-master.rule=HostSNI(`*`)
         - traefik.http.routers.pg-master.rule=Host(`postgres.coastalsites.dev`)
-        - traefik.tcp.routers.pg-master.entrypoints=postgres-master
+        - traefik.http.routers.pg-master.tls.certresolver=leresolver
+        - traefik.tcp.routers.pg-master.entrypoints=tcp
         - traefik.tcp.services.pg-master.loadbalancer.server.port=5000
         # PostgreSQL Replica (TCP 5001)
-        - traefik.tcp.routers.pg-replica.rule=HostSNI(`*`)
+        - traefik.tcp.routers.ddpg-replica.rule=HostSNI(`*`)
         - traefik.tcp.routers.pg-replica.entrypoints=postgres-replica
         - traefik.tcp.services.pg-replica.loadbalancer.server.port=5001
         # REST API (HTTPS 443)
         - traefik.http.routers.api.rule=Host(`postgres.api.coastalsites.dev`)
         - traefik.http.routers.api.entrypoints=websecure
         - traefik.http.routers.api.tls=true
-        - traefik.http.routers.api.tls.certresolver=myresolver
+        - traefik.http.routers.api.tls.certresolver=leresolver
         - traefik.http.services.api.loadbalancer.server.port=8008
 
   etcd:
