@@ -23,7 +23,7 @@ services:
       - PATRONI_POSTGRESQL_CONNECT_ADDRESS=dbnode1:5432
       - PATRONI_RESTAPI_CONNECT_ADDRESS=dbnode1:8008
     env_file:
-      - test.env
+      - stack.env
     networks:
       - app-internal
       - traefik-public
@@ -40,7 +40,7 @@ services:
       - PATRONI_POSTGRESQL_CONNECT_ADDRESS=dbnode2:5432
       - PATRONI_RESTAPI_CONNECT_ADDRESS=dbnode2:8008
     env_file:
-      - test.env
+      - stack.env
     networks:
       - app-internal
       - traefik-public
@@ -57,7 +57,7 @@ services:
       - PATRONI_POSTGRESQL_CONNECT_ADDRESS=dbnode3:5432
       - PATRONI_RESTAPI_CONNECT_ADDRESS=dbnode3:8008
     env_file:
-      - test.env
+      - stack.env
     networks:
       - app-internal
       - traefik-public
