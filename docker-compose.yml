@@ -104,6 +104,8 @@ services:
     command: /run/secrets/patroni.yml
 
 configs:
+  haproxy_cfg:
+    file: config/haproxy.cfg
   traefik_dynamic:
     file: traefik-dynamic-patroni-stack.yml
   etcd_cfg:
