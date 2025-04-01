@@ -42,11 +42,13 @@ http:
           path: "/master"
           interval: "5s"
           timeout: "3s"
+          port: 8008
+          retries: 3
           followRedirects: true
           headers:
             User-Agent: "Traefik Health Check"
           scheme: "http"
         servers:
-          - url: "http://dbnode1:8008"
-          - url: "http://dbnode2:8008"
-          - url: "http://dbnode3:8008"
+          - host: "dbnode1"
+          - host: "dbnode2"
+          - host: "dbnode3"
